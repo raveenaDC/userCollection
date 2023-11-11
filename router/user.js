@@ -88,7 +88,7 @@ router.patch('/user/update', async (req, res) => {
     }
 })
 
-// UPDATE ONE USING updateMany
+// UPDATE USING updateMany
 router.patch('/user/update-many', async (req, res) => {
     try {
         const data = await userModel.updateMany({ age: { $gte: 15 } }, { $set: req.body });
