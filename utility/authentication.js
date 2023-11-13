@@ -3,14 +3,17 @@ const tokenSecret = 'verifyTokenUsingJwt1234';
 
 module.exports.verifyToken = (req, res, next) => {
     const token = req.header('Authorization');
-
-    if (!token) {
-        return res.send("You are unauthorized");
+    authToken = token?.replace(/^Bearer\s+/, "");
+    if (!authToken) {
+        return res.status(400).send("You are unauthorized")
+        // res.send("You are unauthorized");
     }
 
-    jwt.verify(token, tokenSecret, (err, user) => {
+    jwt.verify(authToken, tokenSecret, (err, user) => {
         if (err) {
-            return res.send("Something went wrong", err);
+            console.log(err)
+            return res.status(403).send("Invalid Token",)
+
         }
         req.user = user;
         next();

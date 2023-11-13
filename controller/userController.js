@@ -12,14 +12,14 @@ module.exports.userRegistration = async (req, res) => {
             userName: req.body.userName,
             password: req.body.password,
             age: req.body.age,
-            address: { state: req.body.city, city: req.body.city }
+            address: { state: req.body.state, city: req.body.city }
 
         })
         await user.save()
-        res.send("Registration Successful")
+        return res.send("Registration Successful")
     }
     catch (err) {
-        res.send("error", err)
+        return res.send("error", err)
         // console.log(err);
     }
 }
@@ -29,7 +29,7 @@ module.exports.userLogin = async (req, res) => {
     try {
         if (!req.body.password || !req.body.username)
             return res.send("you are missing something...")
-        const user = await userModel.findOne({ username: req.body.username })
+        const user = await userModel.findOne({ userName: req.body.username })
         if (!user)
             return res.send("username not found")
         if (user.password == req.body.password) {
@@ -88,14 +88,17 @@ module.exports.listUserByState = async (req, res) => {
 // DELETE PARTICULAR USER
 module.exports.userRemove = async (req, res) => {
     try {
-        const user = await userModel.findById(req.params.userId)
+        console.log(req.params.userId)
+        const user = await userModel.findByIdAndDelete(req.params.userId)
+        return res.send("user deleted")
+
         if (!user)
             return res.send('No User Found')
-        await user.remove();
-        res.send("user deleted")
+
     }
     catch (err) {
-        res.send("error", err)
+        return res.send("error", err)
+        // console.log(err)
     }
 
 
@@ -104,22 +107,34 @@ module.exports.userRemove = async (req, res) => {
 // UPDATE ONE USING updateOne 
 module.exports.userUpdateOne = async (req, res) => {
     try {
-        const data = await userModel.updateOne({ _id: req.body.id }, { $set: req.body });
-
-        res.send({ result: data, message: "Data Updated Successfully" })
+        const result = await userModel.updateOne(
+            { _id: req.params.id },
+            {
+                $set: {
+                    name: req.body.name,
+                    age: req.body.age,
+                    'address.state': req.body.state,
+                    'address.city': req.body.city,
+                    // userName: req.body.userName,
+                    // password: req.body.password,
+                }
+            }
+        ); res.send("Data Updated Successfully")
     }
     catch (err) {
         res.send("error", err)
     }
-}
+};
 
 // UPDATE ONE USING updateMany
 module.exports.userUpdateMany = async (req, res) => {
     try {
-        const data = await userModel.updateMany({ age: { $gte: 15 } }, { $set: req.body });
-        res.send({ result: data, message: "Data Updated Successfully" })
+        const result = await userModel.updateMany(
+            { age: { $gte: 15 } },
+            { $set: { 'address.city': "kochi" } }
+        ); res.send("City Updated Successfully")
     }
     catch (err) {
         res.send("error", err)
     }
-}
+};
