@@ -10,7 +10,12 @@ var userSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-
+    password: {
+        type: String
+    },
+    userName: {
+        type: String
+    },
     address:
     {
         state: {
