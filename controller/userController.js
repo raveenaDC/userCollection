@@ -7,6 +7,10 @@ module.exports.userRegistration = async (req, res) => {
         if (!req.body.name || !req.body.age || !req.body.city) {
             return res.send("fields missing");
         }
+
+        const name = await userModel.findOne({ userName: req.body.userName })
+        if (name) return res.send("User Name already exist")
+
         const user = new userModel({
             name: req.body.name,
             userName: req.body.userName,
